@@ -28,5 +28,81 @@
 }
 
 .tetramino {
-  background-color: blue;
+  border-radius: 3px;
+  /* border: 1px solid #90A4AE; */
+  position: relative;
+}
+
+.tetramino:before,
+.tetramino:after {
+  /* background-color: #fff; */
+  /* border-radius: 2px; */
+  position: absolute;
+  content: ' ';
+}
+
+.tetramino:before {
+  border: 2px solid white;
+  border-width: 2px 2px 0 0;
+  top: 2px;
+  left: 6px;
+  width: 10px;
+  height: 5px;
+  z-index: 2;
+}
+
+/* .tetramino:before {
+  top: 5px;
+  left: 10px;
+  width: 5px;
+  height: 3px;
+  z-index: 2;
+}
+
+.tetramino:after {
+  top: 5px;
+  left: 12px;
+  width: 3px;
+  height: 5px;
+  z-index: 2;
+} */
+
+.color0 {
+  background-color: #BBDEFB;
+  background-image: linear-gradient(45deg, #42A5F5, #BBDEFB);
+}
+
+.color1 {
+  background-color: #90CAF9;
+  background-image: linear-gradient(45deg, #42A5F5, #90CAF9);
+}
+
+.color2 {
+  background-color: #64B5F6;
+  background-image: linear-gradient(45deg, #42A5F5, #64B5F6);
+}
+
+.color3 {
+  background-color: #42A5F5;
+  background-image: linear-gradient(45deg, #42A5F5, #42A5F5);
+}
+
+.color4 {
+  background-color: #B3E5FC;
+  background-image: linear-gradient(45deg, #42A5F5, #B3E5FC);
+}
+
+.color5 {
+  background-color: #81D4FA;
+  background-image: linear-gradient(45deg, #42A5F5, #81D4FA);
+}
+
+.color6 {
+  background-color: #4FC3F7;
+  background-image: linear-gradient(45deg, #42A5F5, #4FC3F7);
+}
+
+.colorInactive {
+  background-color: #386880;
+  background-image: linear-gradient(45deg, #386880, #639ab6);
 }

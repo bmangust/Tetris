@@ -5,17 +5,19 @@ const log = (message) => console.log(message);
 const draw = () => {
   current.forEach((index) => {
     squares[currentPosition + index].classList.add("tetramino");
+    squares[currentPosition + index].classList.add(`color${random}`);
   });
 };
 
 const undraw = () => {
   current.forEach((index) => {
     squares[currentPosition + index].classList.remove("tetramino");
+    squares[currentPosition + index].classList.remove(`color${random}`);
   });
 };
 
 const move = (direction) => {
-  if (isPaused) return;
+  if (state !== states['game']) return;
   undraw();
   switch (direction) {
     case "left":
@@ -61,7 +63,7 @@ const move = (direction) => {
       }
   }
   draw();
-  log(currentPosition);
+  // log(currentPosition);
 };
 
 const createCells = (n = 10, className = "") => {
@@ -81,16 +83,23 @@ const fillGrid = (n = 10, className = "") => {
 };
 
 const fillNext = () => {
-  let next = $`.next`;
   let arr = new Array(16).fill`.`;
   const map = arr.map(() => document.createElement("div"));
-  map.forEach((el) => next.prepend(el));
+  map.forEach((el) => nextGrid.prepend(el));
+  next = $$`.next div`;
 };
 
+/**
+ * checks and freezes current tetramino
+ * if it touches taken
+ */
 const freeze = () => {
   const freezeFigure = (current) => {
-    current.forEach((index) =>
-      squares[currentPosition + index].classList.add("taken")
+    current.forEach((index) => {
+      squares[currentPosition + index].classList.remove(`color${random}`);
+      squares[currentPosition + index].classList.add("taken");
+      squares[currentPosition + index].classList.add('colorInactive');
+    }
     );
   };
 
@@ -99,9 +108,6 @@ const freeze = () => {
       squares[currentPosition + index + w].classList.contains("taken")
     )
   ) {
-    //  experiment with time to freeze
-    // setTimeout(() => {
-    // }, 300);
     freezeFigure(current);
     addScore();
     drawNext();
@@ -115,14 +121,16 @@ const freeze = () => {
   return false;
 };
 
+const checkFreeze = () => {
+  if (current.some((index) =>
+      squares[currentPosition + index + w].classList.contains("taken"))) {
+        return true;
+      }
+  return false;
+}
+
+// hard drop
 const drop = () => {
-  const checkFreeze = () => {
-    if (current.some((index) =>
-        squares[currentPosition + index + w].classList.contains("taken"))) {
-          return true;
-        }
-    return false;
-  }
   undraw();
   while (!checkFreeze()) {
     currentPosition += w;
@@ -131,13 +139,18 @@ const drop = () => {
   freeze();
 };
 
+// displays next tetramino
 const drawNext = () => {
+  log(`drawNext begin. random: ${random}`);
   random = nextRandom;
   nextRandom = Math.floor(Math.random() * previews.length);
-  next.forEach((item) => item.classList.remove("tetramino"));
-  previews[nextRandom].forEach((index) =>
-    next[index].classList.add("tetramino")
+  next.forEach((item) => item.className = '');
+  previews[nextRandom].forEach((index) => {
+    next[index].classList.add("tetramino");
+    next[index].classList.add(`color${nextRandom}`);
+  }
   );
+  log(`drawNext end. random: ${random}`);
 };
 
 // checks if current figure is split in pieces after rotation
@@ -160,12 +173,18 @@ const isSplit = (basePoint) => {
 };
 
 const rotate = () => {
-  if (isPaused) return;
+  log(`rotate begin. random: ${random}`);
+  if (state !== states['game']) return;
   if (freeze()) return;
   undraw();
   const basePoint = Math.floor((current[0] + currentPosition) % w);
+  const prevRotation = rotation;
   rotation = ++rotation % 4;
   current = tetraminoes[random][rotation];
+  if (checkFreeze()) {
+    rotation = prevRotation;
+    current = tetraminoes[random][rotation];
+  }
   while (isSplit(basePoint)) {
     if (basePoint > 5) {
       currentPosition--;
@@ -177,9 +196,9 @@ const rotate = () => {
 };
 
 const update = () => {
-  if (!isPaused) {
+  if (state === states['game']) {
     move("down");
-    freeze();
+    setTimeout(freeze, freezeDelay);
   }
 };
 
@@ -189,15 +208,18 @@ const addScore = () => {
 
     if (row.every((index) => squares[index].classList.contains("taken"))) {
       score += 10;
-      ScoreDisplay.innerHTML = score;
+      scoreDisplay.innerHTML = score;
       row.forEach((index) => squares[index].remove());
       fillGrid(10);
-      squares = $$`.grid > div`;
+      squares = $$`.grid div`;
+      speed = score < 100 ? 1 : score / 100;
+      interval = 2000 / speed;
     }
   }
 };
 
 const checkGameOver = () => {
+  if (state !== states['game']) return;
   if (
     current.some((index) =>
       squares[currentPosition + index].classList.contains("taken")
@@ -208,30 +230,50 @@ const checkGameOver = () => {
     const message = document.createElement("div");
     message.classList.add("message");
     message.innerHTML = "The game is over. Your score is " + currentScore;
-    $(".score").append(message);
+    scoreDisplay.append(message);
+    state = states['over'];
   }
 };
 
-fillGrid(10, "taken");
-fillGrid(200);
-fillNext();
+// prepare game field
+const newGame = () => {
+  log(`new game begin. random: ${random}`);
+  grid.innerHTML = '';
+  nextGrid.innerHTML = '';
+  score = 0;
+  speed = 1;
+  interval = 2000 / speed;
+  scoreDisplay.innerHTML = score;
+  fillGrid(10, "taken");
+  fillGrid(200);
+  fillNext();
+  squares = $$`.grid div`;
+  drawNext();
+  current = tetraminoes[random][rotation];
+  draw();
+  log(`new game end. random: ${random}`);
+}
+  
 
 //  global game conststans and variables
 const grid = $`.grid`;
-let squares = $$`.grid > div`;
+let squares = $$`.grid div`;
+const nextGrid = $`.next`;
 let next = $$`.next div`;
-const ScoreDisplay = $`#score`;
+const scoreDisplay = $`#score`;
 const button = $`button`;
 const w = 10; //field width
 const pw = 4; //preview width
-let isPaused = false;
+const states = {'game': 0, 'pause': 1, 'over': 2};
+let state = states['over'];
 let score = 0;
+const freezeDelay = 500;
 
 const L = [
-  [1, w + 1, w * 2 + 1, 2],
-  [0, 1, 2, w + 2],
-  [1, w + 1, w * 2, w * 2 + 1],
-  [0, w, w + 1, w + 2],
+  [1, w + 1, w * 2 + 1, w * 2 + 2],
+  [0, 1, 2, w],
+  [0, 1, w + 1, w * 2 + 1],
+  [2, w, w + 1, w + 2],
 ];
 
 const J = [
@@ -277,7 +319,7 @@ const I = [
 ];
 
 const previews = [
-  [1, pw + 1, pw * 2 + 1, 2],
+  [1, pw + 1, pw * 2 + 1, pw * 2 + 2],
   [1, pw + 1, pw * 2, pw * 2 + 1],
   [1, pw, pw + 1, pw * 2],
   [0, pw, pw + 1, pw * 2 + 1],
@@ -288,18 +330,8 @@ const previews = [
 
 let currentPosition = 4;
 const tetraminoes = [L, J, Z, S, T, O, I];
-const colors = [
-  "#f44336",
-  "#673AB7",
-  "#2196F3",
-  "#4CAF50",
-  "#FDD835",
-  "#FF9800",
-  "#607D8B",
-];
 let random = Math.floor(Math.random() * tetraminoes.length);
 let nextRandom = Math.floor(Math.random() * previews.length);
-drawNext();
 let rotation = Math.floor(Math.random() * 4);
 let current = tetraminoes[random][rotation];
 let speed = 1;
@@ -307,22 +339,31 @@ let interval = 2000 / speed;
 let timer = setInterval(() => update(), interval);
 
 $("button").addEventListener("click", (event) => {
-  isPaused = !isPaused;
+  if (state === states['over']) {
+    newGame();
+  }
+  state = state === states['game'] ? states['pause'] : states['game'];
 });
 
 document.addEventListener("keydown", (event) => {
   log(`keycode: ${event.keyCode}, key: ${event.key}`);
-  if (event.key === " ") {
-    isPaused = !isPaused;
-  } else if (event.key == "ArrowLeft") {
-    move("left");
-  } else if (event.key == "ArrowRight") {
-    move("right");
-  } else if (event.key === "ArrowDown") {
-    move("down");
-  } else if (event.key === "ArrowUp") {
-    rotate();
-  } else if (event.key === "Control") {
-    drop();
+  if (event.key === "Escape") {
+    if (state === states['over']) {
+      newGame();
+      state = states['pause'];
+    }
+    state = state === states['pause'] ? states['game'] : states['pause'];
+  } else if (state === states['game']) {
+    if (event.key == "ArrowLeft") {
+      move("left");
+    } else if (event.key == "ArrowRight") {
+      move("right");
+    } else if (event.key === "ArrowDown") {
+      move("down");
+    } else if (event.key === "ArrowUp") {
+      rotate();
+    } else if (event.key === " ") {
+      drop();
+    }
   }
 });
