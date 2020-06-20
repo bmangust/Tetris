@@ -1,5 +1,5 @@
 # Tetris
-This is a new and really unique game... <drum roll>  
+This is a new and really unique game...  \<drum roll>  
 Ladies and gentlemen...  
 meet...  
 the great..  
