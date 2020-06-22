@@ -12,12 +12,12 @@ Tetris! <ta-da!>
 - [x] endgame score
 - [x] hard drop
 - [x] pause
+- [x] changing speed over time
+- [x] delay before freeze
+- [x] pretty ui
 
 ### To do:
-- [ ] pretty ui
 - [ ] darken screen and show controls on pause
-- [ ] changing speed over time
-- [ ] delay before freeze
 - [ ] music
 - [ ] animations
 - [ ] weird modes:

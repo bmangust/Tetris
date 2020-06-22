@@ -70,7 +70,7 @@ const createCells = (n = 10, className = "") => {
   let arr = new Array(n).fill`.`;
   const map = arr.map((it) => {
     const el = document.createElement("div");
-    if (className !== "") el.classList.add(className);
+    if (className !== "") el.className = className;
     return el;
   });
   return map;
@@ -94,7 +94,7 @@ const fillNext = () => {
  * if it touches taken
  */
 const freeze = () => {
-  const freezeFigure = (current) => {
+  const freezeFigure = () => {
     current.forEach((index) => {
       squares[currentPosition + index].classList.remove(`color${random}`);
       squares[currentPosition + index].classList.add("taken");
@@ -102,18 +102,10 @@ const freeze = () => {
     }
     );
   };
-
-  if (
-    current.some((index) =>
-      squares[currentPosition + index + w].classList.contains("taken")
-    )
-  ) {
-    freezeFigure(current);
+  if (checkFreeze()) {
+    freezeFigure();
     addScore();
     drawNext();
-    rotation = Math.floor(Math.random() * 4);
-    current = tetraminoes[random][rotation];
-    currentPosition = 4;
     draw();
     checkGameOver();
     return true;
@@ -141,16 +133,16 @@ const drop = () => {
 
 // displays next tetramino
 const drawNext = () => {
-  log(`drawNext begin. random: ${random}`);
   random = nextRandom;
   nextRandom = Math.floor(Math.random() * previews.length);
   next.forEach((item) => item.className = '');
   previews[nextRandom].forEach((index) => {
     next[index].classList.add("tetramino");
     next[index].classList.add(`color${nextRandom}`);
-  }
-  );
-  log(`drawNext end. random: ${random}`);
+  })
+  rotation = Math.floor(Math.random() * 4);
+  current = tetraminoes[random][rotation];
+  currentPosition = 4;
 };
 
 // checks if current figure is split in pieces after rotation
@@ -212,8 +204,10 @@ const addScore = () => {
       row.forEach((index) => squares[index].remove());
       fillGrid(10);
       squares = $$`.grid div`;
-      speed = score < 100 ? 1 : score / 100;
+      speed = score < 100 ? 1 : Math.floor(score / 50);
       interval = 2000 / speed;
+      clearInterval(timer);
+      timer = setInterval(() => update(), interval);
     }
   }
 };
@@ -237,21 +231,20 @@ const checkGameOver = () => {
 
 // prepare game field
 const newGame = () => {
-  log(`new game begin. random: ${random}`);
   grid.innerHTML = '';
   nextGrid.innerHTML = '';
   score = 0;
   speed = 1;
   interval = 2000 / speed;
+  clearInterval(timer);
+  timer = setInterval(() => update(), interval);
   scoreDisplay.innerHTML = score;
-  fillGrid(10, "taken");
+  fillGrid(10, "taken invisible");
   fillGrid(200);
   fillNext();
   squares = $$`.grid div`;
   drawNext();
-  current = tetraminoes[random][rotation];
   draw();
-  log(`new game end. random: ${random}`);
 }
   
 
