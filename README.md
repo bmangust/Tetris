@@ -1,11 +1,13 @@
 # Tetris
-This is a new and really unique game...  \<drum roll>  
+
+This is a new and really unique game... \<drum roll>  
 Ladies and gentlemen...  
 meet...  
 the great..  
 Tetris! <ta-da!>
 
 ### Actually, this game has some features
+
 - [x] preview for the next tetramino
 - [x] keyboard control
 - [x] current score
@@ -15,9 +17,10 @@ Tetris! <ta-da!>
 - [x] changing speed over time
 - [x] delay before freeze
 - [x] pretty ui
+- [x] darken screen and show controls on pause
 
 ### To do:
-- [ ] darken screen and show controls on pause
+
 - [ ] music
 - [ ] animations
 - [ ] weird modes:
