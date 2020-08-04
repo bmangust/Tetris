@@ -196,21 +196,40 @@ const update = () => {
   }
 };
 
+const makeItBurn = async (row) => {
+  let index = row[0];
+  let t = setInterval(() => {
+    if (index > row[9]) {
+      score += 10;
+      scoreDisplay.innerHTML = score;
+      undraw();
+      row.forEach((index) => squares[index].remove());
+      fillGrid(10);
+      squares = $$`.grid div`;
+      draw();
+      speed = score < 100 ? 1 : Math.floor(score / 50);
+      interval = 2000 / speed;
+      clearInterval(t);
+      return;
+    }
+    squares[index].classList.add("burn");
+    index++;
+  }, 50);
+};
+
 const addScore = () => {
+  let isCleared = false;
   for (let i = 0; i < 200; i += w) {
     const row = new Array(10).fill(0).map((it, index) => i + index);
 
     if (row.every((index) => squares[index].classList.contains("taken"))) {
-      score += 10;
-      scoreDisplay.innerHTML = score;
-      row.forEach((index) => squares[index].remove());
-      fillGrid(10);
-      squares = $$`.grid div`;
-      speed = score < 100 ? 1 : Math.floor(score / 50);
-      interval = 2000 / speed;
       clearInterval(timer);
-      timer = setInterval(() => update(), interval);
+      isCleared = true;
+      makeItBurn(row);
     }
+  }
+  if (isCleared) {
+    timer = setInterval(() => update(), interval);
   }
 };
 

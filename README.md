@@ -18,11 +18,11 @@ Tetris! <ta-da!>
 - [x] delay before freeze
 - [x] pretty ui
 - [x] darken screen and show controls on pause
+- [x] animations
 
 ### To do:
 
 - [ ] music
-- [ ] animations
 - [ ] weird modes:
   - reversed gravity
   - wind

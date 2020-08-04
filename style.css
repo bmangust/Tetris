@@ -153,3 +153,8 @@ button {
 .hidden {
   display: none;
 }
+
+.burn {
+  background-color: #fa9107;
+  background-image: linear-gradient(45deg, #eed12b, #e26c0b);
+}
