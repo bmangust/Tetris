@@ -17,7 +17,7 @@ const undraw = () => {
 };
 
 const move = (direction) => {
-  if (state !== states['game']) return;
+  if (state !== states["game"]) return;
   undraw();
   switch (direction) {
     case "left":
@@ -98,9 +98,8 @@ const freeze = () => {
     current.forEach((index) => {
       squares[currentPosition + index].classList.remove(`color${random}`);
       squares[currentPosition + index].classList.add("taken");
-      squares[currentPosition + index].classList.add('colorInactive');
-    }
-    );
+      squares[currentPosition + index].classList.add("colorInactive");
+    });
   };
   if (checkFreeze()) {
     freezeFigure();
@@ -114,12 +113,15 @@ const freeze = () => {
 };
 
 const checkFreeze = () => {
-  if (current.some((index) =>
-      squares[currentPosition + index + w].classList.contains("taken"))) {
-        return true;
-      }
+  if (
+    current.some((index) =>
+      squares[currentPosition + index + w].classList.contains("taken")
+    )
+  ) {
+    return true;
+  }
   return false;
-}
+};
 
 // hard drop
 const drop = () => {
@@ -135,11 +137,11 @@ const drop = () => {
 const drawNext = () => {
   random = nextRandom;
   nextRandom = Math.floor(Math.random() * previews.length);
-  next.forEach((item) => item.className = '');
+  next.forEach((item) => (item.className = ""));
   previews[nextRandom].forEach((index) => {
     next[index].classList.add("tetramino");
     next[index].classList.add(`color${nextRandom}`);
-  })
+  });
   rotation = Math.floor(Math.random() * 4);
   current = tetraminoes[random][rotation];
   currentPosition = 4;
@@ -166,7 +168,7 @@ const isSplit = (basePoint) => {
 
 const rotate = () => {
   log(`rotate begin. random: ${random}`);
-  if (state !== states['game']) return;
+  if (state !== states["game"]) return;
   if (freeze()) return;
   undraw();
   const basePoint = Math.floor((current[0] + currentPosition) % w);
@@ -188,7 +190,7 @@ const rotate = () => {
 };
 
 const update = () => {
-  if (state === states['game']) {
+  if (state === states["game"]) {
     move("down");
     setTimeout(freeze, freezeDelay);
   }
@@ -213,7 +215,7 @@ const addScore = () => {
 };
 
 const checkGameOver = () => {
-  if (state !== states['game']) return;
+  if (state !== states["game"]) return;
   if (
     current.some((index) =>
       squares[currentPosition + index].classList.contains("taken")
@@ -225,14 +227,14 @@ const checkGameOver = () => {
     message.classList.add("message");
     message.innerHTML = "The game is over. Your score is " + currentScore;
     scoreDisplay.append(message);
-    state = states['over'];
+    state = states["over"];
   }
 };
 
 // prepare game field
 const newGame = () => {
-  grid.innerHTML = '';
-  nextGrid.innerHTML = '';
+  grid.innerHTML = "";
+  nextGrid.innerHTML = "";
   score = 0;
   speed = 1;
   interval = 2000 / speed;
@@ -245,8 +247,7 @@ const newGame = () => {
   squares = $$`.grid div`;
   drawNext();
   draw();
-}
-  
+};
 
 //  global game conststans and variables
 const grid = $`.grid`;
@@ -257,8 +258,8 @@ const scoreDisplay = $`#score`;
 const button = $`button`;
 const w = 10; //field width
 const pw = 4; //preview width
-const states = {'game': 0, 'pause': 1, 'over': 2};
-let state = states['over'];
+const states = { game: 0, pause: 1, over: 2 };
+let state = states["over"];
 let score = 0;
 const freezeDelay = 500;
 
@@ -330,23 +331,50 @@ let current = tetraminoes[random][rotation];
 let speed = 1;
 let interval = 2000 / speed;
 let timer = setInterval(() => update(), interval);
+const overlay = (function () {
+  const overlay = document.createElement("div");
+  const info = {
+    header: "controls",
+    lines: [
+      "Left:  move left",
+      "Right: move right",
+      "Down:  move down one row",
+      "Up:    rotate",
+      "Space: hard drop",
+      "Esc:   pause/continue",
+    ],
+  };
+  overlay.insertAdjacentHTML("beforeend", `<h3>${info.header}</h3>`);
+  info.lines.forEach((el) => {
+    overlay.insertAdjacentHTML("beforeend", `<div>${el}</div>`);
+  });
+  overlay.classList.add("overlay", "hidden");
+  overlay.setAttribute("id", "overlay");
+  $("body").appendChild(overlay);
+  return overlay;
+})();
 
 $("button").addEventListener("click", (event) => {
-  if (state === states['over']) {
+  if (state === states["over"]) {
     newGame();
   }
-  state = state === states['game'] ? states['pause'] : states['game'];
+  state = state === states["game"] ? states["pause"] : states["game"];
 });
 
 document.addEventListener("keydown", (event) => {
   log(`keycode: ${event.keyCode}, key: ${event.key}`);
   if (event.key === "Escape") {
-    if (state === states['over']) {
+    if (state === states["over"]) {
       newGame();
-      state = states['pause'];
+      state = states["pause"];
     }
-    state = state === states['pause'] ? states['game'] : states['pause'];
-  } else if (state === states['game']) {
+    state = state === states["pause"] ? states["game"] : states["pause"];
+    if (state === states["pause"]) {
+      overlay.classList.remove("hidden");
+    } else {
+      overlay.classList.add("hidden");
+    }
+  } else if (state === states["game"]) {
     if (event.key == "ArrowLeft") {
       move("left");
     } else if (event.key == "ArrowRight") {
