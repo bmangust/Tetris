@@ -27,3 +27,9 @@ Tetris! <ta-da!>
   - reversed gravity
   - wind
   - melted tertraminoes
+
+Here's how it looks:
+
+![tetris](/img/tetris_00.PNG)
+![tetris](/img/tetris_01.PNG)
+![tetris](/img/tetris_02.PNG)
