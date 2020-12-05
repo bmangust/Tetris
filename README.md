@@ -30,6 +30,6 @@ Tetris! <ta-da!>
 
 Here's how it looks:
 
-![tetris](/img/tetris_00.PNG)
-![tetris](/img/tetris_01.PNG)
-![tetris](/img/tetris_02.PNG)
+![tetris](/imgs/tetris_00.PNG)
+![tetris](/imgs/tetris_01.PNG)
+![tetris](/imgs/tetris_02.PNG)
